@@ -29,10 +29,9 @@ class Model():
         x = tf.keras.layers.Dense(self.decoderVocabSize,activation='softmax')(x)
         model = tf.keras.Model([encoderInput,decoderInput],x)
         return model
-    def compileModel(self):
+    def compileModel(self,opt = tf.keras.optimizers.Adam(learning_rate = 0.001),loss = tf.keras.metrics.sparse_categorical_crossentropy):
         self.net.summary()
-        self.net.compile(optimizer = tf.keras.optimizers.Adam(learning_rate = 0.001),
-                         loss = tf.keras.metrics.sparse_categorical_crossentropy)
+        self.net.compile(optimizer = opt,loss = loss)
     def train(self,encoderInput,decoderInput,decoderTarget):
         self.net.fit([encoderInput,decoderInput],decoderTarget,epochs = 1,batch_size=16)
     def saveModdel(self,addr='./Model'):
