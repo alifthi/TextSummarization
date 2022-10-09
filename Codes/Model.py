@@ -36,7 +36,8 @@ class Model():
     def train(self,encoderInput,decoderInput,decoderTarget):
         self.net.fit([encoderInput,decoderInput],decoderTarget,epochs = 1,batch_size=16)
     def saveModdel(self,addr='./Model'):
-        pass
+        model.save(self.net,addr+'/modelstruct.h5')
+        model.saveweights(self.net,addr+'/modelweights.h5')
 utils = utils('/home/alifathi/Documents/AI/DATA/NLP/cnn_dailymail')
 utils.describeTrainData()
 [corpus,summary,encoderVocabSize,decoderVocabSize] = utils.preprocessing(utils.trainData)
