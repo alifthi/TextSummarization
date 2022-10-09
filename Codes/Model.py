@@ -32,8 +32,8 @@ class Model():
     def compileModel(self,opt = tf.keras.optimizers.Adam(learning_rate = 0.001),loss = tf.keras.metrics.sparse_categorical_crossentropy):
         self.net.summary()
         self.net.compile(optimizer = opt,loss = loss)
-    def train(self,encoderInput,decoderInput,decoderTarget):
-        self.net.fit([encoderInput,decoderInput],decoderTarget,epochs = 1,batch_size=16)
+    def train(self,encoderInput,decoderInput,decoderTarget,epochs = 5,batchSize = 128):
+        self.net.fit([encoderInput,decoderInput],decoderTarget,epochs = epochs,batch_size=batchSize)
     def saveModdel(self,addr='./Model'):
         model.save(self.net,addr+'/modelstruct.h5')
         model.saveweights(self.net,addr+'/modelweights.h5')
