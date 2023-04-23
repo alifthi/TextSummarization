@@ -1,31 +1,33 @@
-import pandas as pd
+
 import tensorflow as tf
-from matplotlib import pyplot as plt
-import numpy as np
-class utils():
-    def __init__(self,dataAddr):
-        self.dataAddr = dataAddr
-        self.trainData = self.loadData()
-        self.testData = self.loadData('test')
-        self.validationData = self.loadData('validation')
-    def loadData(self,type='train'):
-        Data = pd.read_csv(self.dataAddr+'/'+type+'.csv')
-        return Data
-    def describeTrainData(self):
-        count = self.trainData['article'].str.count(' ')
-        print('Data frame columnts:\n',self.trainData.columns)
-        count.describe()
-    @staticmethod
-    def preprocessing(data):
+import pandas as pd
+from transformers import AutoTokenizer
+class utils:
+    def __init__(self,dataDir):
+        self.dataDir = dataDir
+        self.tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
+    def loadData(self):
+        self.trainData = pd.read_csv(self.dataDir + 'train.csv')
+        self.testData = pd.read_csv(self.dataDir + 'test.csv')
+    def preprocess(self,data):
         data['article'] = data['article'].str.replace('[^\w\s]','')
         data['article'] = data['article'].str.replace('\([^)]*\)','')
-        data['highlights'] ='_start_' + ' ' +data['highlights'].str.replace('[^\w\s]','')+ ' ' +'_end_' 
+        decoderInput =  '_start_' + ' ' + data['highlights'].str.replace('[^\w\s]','')
+        decoderOutput = data['highlights'].str.replace('[^\w\s]','') + ' ' + '__end__'
+        data['highlights'] = '_start_' + ' ' + data['highlights'].str.replace('[^\w\s]','') + ' ' + '__end__'
+        
         tok = tf.keras.preprocessing.text.Tokenizer()
         tok.fit_on_texts(list(data['article'].astype(str))) 
         text = tok.texts_to_sequences(list(data['article'].astype(str)))
+        encoderVocabSize = len(tok.word_index)
         text = tf.keras.preprocessing.sequence.pad_sequences(text)
         tok = tf.keras.preprocessing.text.Tokenizer() 
         tok.fit_on_texts(list(data['highlights'].astype(str)))
-        summary= tok.texts_to_sequences(list(data['highlights'].astype(str)))
-        summary = tf.keras.preprocessing.sequence.pad_sequences(summary)
-        return [text,summary]
+        decoderInput = tok.texts_to_sequences(list(decoderInput))
+        decoderInput = tf.keras.preprocessing.sequence.pad_sequences(decoderInput)
+        
+        decoderOutput = tok.texts_to_sequences(list(decoderOutput))
+        decoderOutput = tf.keras.preprocessing.sequence.pad_sequences(decoderOutput)
+
+        decoderVocabSize = len(tok.word_index) + 1
+        return [text,decoderInput,decoderOutput,decoderVocabSize,encoderVocabSize]
