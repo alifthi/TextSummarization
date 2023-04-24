@@ -32,3 +32,6 @@ class Model():
     def saveModdel(self,addr='./Model'):
         self.net.save(self.net,addr+'/modelstruct.h5')
         self.net.saveweights(self.net,addr+'/modelweights.h5')
+    def loadModel(self,addr):
+        self.net = tf.keras.models.load_model(addr)
+        
