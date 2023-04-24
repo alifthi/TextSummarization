@@ -29,9 +29,11 @@ class Model():
         self.net.compile(optimizer = opt,loss = loss)
     def train(self,encoderInput,decoderInput,decoderTarget,epochs = 1,batchSize = 16):
         self.net.fit([encoderInput,decoderInput],decoderTarget,epochs = epochs,batch_size=batchSize)
-    def saveModdel(self,addr='./Model'):
-        self.net.save(self.net,addr+'/modelstruct.h5')
-        self.net.saveweights(self.net,addr+'/modelweights.h5')
+    def saveModdel(self,addr='./Model',mode = 'Model'):
+        if mode == 'Model':
+            self.net.save(self.net,addr+'/modelstruct.h5')
+        elif mode == 'weights':
+            self.net.saveweights(self.net,addr+'/modelweights.h5')
     def loadModel(self,addr):
         self.net = tf.keras.models.load_model(addr)
         
