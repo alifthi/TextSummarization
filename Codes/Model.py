@@ -28,7 +28,8 @@ class Model():
         self.net.summary()
         self.net.compile(optimizer = opt,loss = loss)
     def train(self,encoderInput,decoderInput,decoderTarget,epochs = 1,batchSize = 16):
-        self.net.fit([encoderInput,decoderInput],decoderTarget,epochs = epochs,batch_size=batchSize)
+        Hist =  self.net.fit([encoderInput,decoderInput],decoderTarget,epochs = epochs,batch_size=batchSize)
+        return Hist
     def saveModdel(self,addr='./Model',mode = 'Model'):
         if mode == 'Model':
             self.net.save(self.net,addr+'/modelstruct.h5')
@@ -36,4 +37,12 @@ class Model():
             self.net.saveweights(self.net,addr+'/modelweights.h5')
     def loadModel(self,addr):
         self.net = tf.keras.models.load_model(addr)
-        
+    @staticmethod
+    def plotHistory(Hist):
+        from matplotlib import pyplot as plt
+        plt.plot(Hist.history['accuracy'])
+        plt.plot(Hist.history['val_accuracy'])
+        plt.title('model accuracy')
+        plt.plot(Hist.history['loss'])
+        plt.plot(Hist.history['val_loss'])
+        plt.title('model loss')
